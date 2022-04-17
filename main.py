@@ -30,16 +30,16 @@ def create_label_array(audio_mask, labelling, sample_len):
     array_sample = np.array([-1]*sample_len)
     label_array = []
     for label, start, end in labelling:
-        label_array.extend([label]*int(sampling_frequency*(end-start)))
-    label_array.extend([label]*(sum(audio_mask)-len(label_array)))
-    array_sample[audio_mask] = label_array
+        label_array.extend([int(label)]*int(sampling_frequency*(end-start)))
+    label_array.extend([int(label)]*(sum(audio_mask)-len(label_array)))
+    array_sample[audio_mask] = -1*(np.array(label_array)+1)
     array_sample = np.multiply(audio_mask, array_sample)
     return array_sample
 
 
 if __name__ == "__main__":
-    filename = "audio_with_noise.wav"
-    # filename = "X2zqiX6yL3I.wav"
+    #filename = "audio_with_noise.wav"
+    filename = "X2zqiX6yL3I.wav"
 
     wav, sampling_frequency = librosa.load(os.path.join("data", filename), sr=None)
 
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     labelling = create_labelling(labels, wav_splits)
 
     labeled = create_label_array(audio_mask, labelling, sample_len)
-    plt.plot(np.array(range(len(audio_mask)))/16000, -(labeled+1))
+    plt.plot(np.array(range(len(audio_mask)))/16000, labeled)
     plt.plot(np.array(range(len(audio_mask)))/16000, audio_mask, "r--")
     plt.plot(np.array(range(len(audio_mask)))/16000, wav2, color="black")
     plt.show()
