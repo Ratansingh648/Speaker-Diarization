@@ -6,7 +6,7 @@ Speaker diarisation is a combination of speaker segmentation and speaker cluster
 
 ![image](https://user-images.githubusercontent.com/22644796/163759381-72f90030-9799-4ad3-98c1-eb8e1ca6c6b3.png)
 
-We have taken a snippet from this <a href="https://www.youtube.com/watch?v=lhFU5H5KPFE" target="_blank">Youtube Video</a> as an example. Author does not claim any rights to this video.
+We have taken a snippet from this <a href="https://www.youtube.com/watch?v=lhFU5H5KPFE" target="_blank"> Youtube Video</a> as an example. Author does not claim any rights to this video. Please enable audio while watching below example.
 
 https://user-images.githubusercontent.com/22644796/163762535-660b27c5-dc00-4c71-948a-72674ead9b4b.mp4
 
