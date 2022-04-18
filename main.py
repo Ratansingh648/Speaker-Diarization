@@ -1,3 +1,4 @@
+import joblib
 import librosa
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,18 +8,26 @@ from spectralcluster import SpectralClusterer, RefinementOptions
 
 from VAD import VAD
 from VoiceEncoder import VoiceEncoder
+from plot_speakers import plot_speakers
 
 
 def create_labelling(labels, wav_splits):
     times = [((s.start + s.stop) / 2) / 16000 for s in wav_splits]
     labelling = []
     start_time = 0
+    threshold = 0.25
 
     for i, time in enumerate(times):
+        # If Speaker changes, append the last speaker and reset start time
         if i > 0 and labels[i] != labels[i-1]:
+
+            # skip the last speaker for really short speak time
+            # if (time-start_time) >= threshold:
             temp = [str(labels[i-1]), start_time, time]
             labelling.append(tuple(temp))
             start_time = time
+
+        # For Last Segment, append the last data.
         if i == len(times)-1:
             temp = [str(labels[i]), start_time, time]
             labelling.append(tuple(temp))
@@ -39,7 +48,8 @@ def create_label_array(audio_mask, labelling, sample_len):
 
 if __name__ == "__main__":
     #filename = "audio_with_noise.wav"
-    filename = "X2zqiX6yL3I.wav"
+    #filename = "X2zqiX6yL3I.wav"
+    filename = "2_people.wav"
 
     wav, sampling_frequency = librosa.load(os.path.join("data", filename), sr=None)
 
@@ -63,11 +73,17 @@ if __name__ == "__main__":
         max_clusters=100,
         refinement_options=refinement_options)
 
+    joblib.dump(cont_embeds, "cont_embed_{}.pkl".format(filename.split(".")[0]))
+
     labels = clusterer.predict(cont_embeds)
     labelling = create_labelling(labels, wav_splits)
-
+    print(labelling)
     labeled = create_label_array(audio_mask, labelling, sample_len)
-    plt.plot(np.array(range(len(audio_mask)))/16000, labeled)
-    plt.plot(np.array(range(len(audio_mask)))/16000, audio_mask, "r--")
-    plt.plot(np.array(range(len(audio_mask)))/16000, wav2, color="black")
-    plt.show()
+
+    #plt.plot(np.array(range(len(audio_mask)))/16000, labeled)
+    #plt.plot(np.array(range(len(audio_mask)))/16000, audio_mask, "r--")
+    #plt.plot(np.array(range(len(audio_mask)))/16000, wav2, color="black")
+    # plt.show()
+
+    print(np.array(labels)-2)
+    plot_speakers(wav, wav_splits, 16000, np.array(labels)-2)
