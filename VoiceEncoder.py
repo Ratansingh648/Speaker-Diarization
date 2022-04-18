@@ -8,10 +8,10 @@ import torch
 
 
 class VoiceEncoder(nn.Module):
-    def __init__(self, device: Union[str, torch.device]=None, mel_window_length=25, 
-                mel_window_step=10, mel_n_channels=40, sampling_rate=16000, model_hidden_size=256,
-                model_embedding_size=256, model_num_layers=3, partial_n_frames=160,
-                verbose=True, weights_fpath: Union[Path, str]=None):
+    def __init__(self, device: Union[str, torch.device] = None, mel_window_length=25,
+                 mel_window_step=10, mel_n_channels=40, sampling_rate=16000, model_hidden_size=256,
+                 model_embedding_size=256, model_num_layers=3, partial_n_frames=160,
+                 verbose=True, weights_fpath: Union[Path, str] = None):
         """
         If None, defaults to cuda if it is available on your machine, otherwise the model will
         run on cpu. Outputs are always returned on the cpu, as numpy arrays.
@@ -71,7 +71,6 @@ class VoiceEncoder(nn.Module):
         _, (hidden, _) = self.lstm(mels)
         embeds_raw = self.relu(self.linear(hidden[-1]))
         return embeds_raw / torch.norm(embeds_raw, dim=1, keepdim=True)
-
 
     def compute_partial_slices(self, n_samples: int, rate, min_coverage):
         """
@@ -176,11 +175,11 @@ class VoiceEncoder(nn.Module):
         :param kwargs: extra arguments to embed_utterance()
         :return: the embedding as a numpy array of float32 of shape (model_embedding_size,).
         """
-        raw_embed = np.mean([self.embed_utterance(wav, return_partials=False, **kwargs) \
+        raw_embed = np.mean([self.embed_utterance(wav, return_partials=False, **kwargs)
                              for wav in wavs], axis=0)
         return raw_embed / np.linalg.norm(raw_embed, 2)
-    
+
     def wav_to_mel_spectrogram(self, wav, sampling_rate):
-        frames = melspectrogram( wav, sampling_rate, n_fft=int(sampling_rate * self.mel_window_length / 1000),
-                hop_length=int(sampling_rate * self.mel_window_step / 1000), n_mels=self.mel_n_channels)
+        frames = melspectrogram(y=wav, sr=sampling_rate, n_fft=int(sampling_rate * self.mel_window_length / 1000),
+                                hop_length=int(sampling_rate * self.mel_window_step / 1000), n_mels=self.mel_n_channels)
         return frames.astype(np.float32).T

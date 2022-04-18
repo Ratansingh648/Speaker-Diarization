@@ -39,7 +39,7 @@ class VAD(object):
         """Detects the segments of voice"""
 
         wav = self._normalize_volume(wav, -30, increase_only=True)
-        wav = librosa.resample(wav, sampling_frequency, self.base_sampling_frequency)
+        wav = librosa.resample(wav, orig_sr=sampling_frequency, target_sr=self.base_sampling_frequency)
         sampling_frequency = self.base_sampling_frequency
         samples_per_window = (self.vad_window_length*sampling_frequency)//1000
         wav = wav[:len(wav) - (len(wav) % samples_per_window)]
